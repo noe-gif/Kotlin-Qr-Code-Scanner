@@ -24,7 +24,7 @@
 User interface and experience
 
 <p align="center">
-<img src="assets/lv_0_20230502125528.gif" alt="androiddevnotes logo"></img>
+<img src="assets/presentation.gif" alt="androiddevnotes logo"></img>
 </p>
 
 ## Getting Started
