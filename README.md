@@ -16,7 +16,7 @@
 ![](https://img.shields.io/github/languages/count/noe-gif/Dating-app-React-Native?color=white&label=Languages)
 ![](https://img.shields.io/github/license/noe-gif/Dating-app-React-Native?color=red&label=License)
 ![](https://img.shields.io/badge/Minimum%20SDK-23%20(Marshmallow)-839192?logo=android&logoColor=white)
-![](https://img.shields.io/badge/Target%20SDK-30%20(Android%2013)-566573?logo=android&logoColor=white)
+![](https://img.shields.io/badge/Target%20SDK-30%20(Android%2011)-566573?logo=android&logoColor=white)
 [![Crowdin](https://badges.crowdin.net/inure/localized.svg)](https://crowdin.com/project/inure)
 
 # MBTI matching dating app
