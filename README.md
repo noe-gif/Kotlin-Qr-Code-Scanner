@@ -19,7 +19,7 @@
 ![](https://img.shields.io/badge/Target%20SDK-30%20(Android%2011)-566573?logo=android&logoColor=white)
 [![Crowdin](https://badges.crowdin.net/inure/localized.svg)](https://crowdin.com/project/inure)
 
-# MBTI matching dating app
+# QR code scanner
 
 User interface and experience
 
