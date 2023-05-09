@@ -27,28 +27,78 @@ User interface and experience
 <img src="assets/presentation.gif" alt="androiddevnotes logo"></img>
 </p>
 
-## Getting Started
+## Installation
 
-Follow these instructions to build and run the project
-
-### Setup React Native
-
-A detailed guide for react native cli platforms setup could be find [here](https://reactnative.dev/docs/environment-setup)
-
-### Setup Project
-
-- Clone this repository using `git clone https://github.com/noe-gif/Dating-app-React-Native.git`.
-- `cd` into `Dating-app-React-Native`.
-- `npm i` to get all the dependencies.
-- Generate library files using react-link (**required**) 
+Add below dependancy in application build.gradle
+```gradle
+dependencies {
+    // it is suppporting ABIs likes armeabi-v7a, arm64-v8a, x86 and x86_64.
+    compile 'de.mrmaffen:libvlc-android:2.1.12@aar'    
+}
 ```
-react-native link
+Also include the following required permission in your manifest.
+```xml
+<!--if you want to play server URL-->
+<uses-permission android:name="android.permission.INTERNET" />
 ```
-- Run
+Implements IVLCVout.Callback and MediaPlayer.EventListener in activity or fragment
+
+Include following veriables at class level
+```kotlin
+// declare media player object
+private var mediaPlayer: MediaPlayer?=null
+// declare surface view object
+var mSurface: SurfaceView?=null
+// declare surface holder object
+var holder: SurfaceHolder?= null
+// declare libvlc object
+private var libvlc: LibVLC?=null
 ```
-npm start || react-native run-android || react-native run-ios
+Add following method to create player to play provided URL
+```kotlin
+/**
+* Creates MediaPlayer and plays video
+* @param media
+*/
+fun createPlayer(media: String) {
+  if(mediaPlayer!=null && libvlc!=null){
+      releasePlayer()
+  }
+  Log.i(TAG, "Creating vlc player")
+  try {
+      // create arraylist to assign option to create libvlc object
+      val options = ArrayList<String>()
+      options.add("--aout=opensles")
+      options.add("--http-reconnect")
+      options.add("--audio-time-stretch") // time stretching
+      options.add("--network-caching=1500")
+      options.add("-vvv") // verbosity
+
+       // create libvlc object
+       libvlc = LibVLC(activity, options)
+
+       // get surface view holder to display video
+       this.holder=mSurface!!.holder
+       holder!!.setKeepScreenOn(true)
+
+       // Creating media player
+       mediaPlayer = MediaPlayer(libvlc)
+
+       // Setting up video output
+       val vout = mediaPlayer!!.vlcVout
+       vout.setVideoView(mSurface)
+       vout.addCallback(this)
+       vout.attachViews()
+       val m = Media(libvlc, Uri.parse(media))
+       mediaPlayer!!.setMedia(m)
+       mediaPlayer!!.play()
+
+  } catch (e: Exception) {
+    Toast.makeText(activity, "Error in creating player!", Toast.LENGTH_LONG).show()
+  }
+
+}
 ```
-> Mobile App enforces [Conventional Commits specification](https://www.conventionalcommits.org/en/v1.0.0/), make sure to read and follow them.
 
 ## Project Structure
 
