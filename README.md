@@ -1,7 +1,7 @@
 <h1 align="center">Kotlin QR code analyzer</h1></br>
 
 <p align="center">
-📱 This project is a native android app that analyzes a qr code and displays it's content
+📱 Very simple android app that analyzes QR codes and displays their content
 </p>
 <br>
 
