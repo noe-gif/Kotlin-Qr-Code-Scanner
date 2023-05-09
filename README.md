@@ -41,7 +41,7 @@ Also include the following required permission in your manifest.
 <!--if you want to play server URL-->
 <uses-permission android:name="android.permission.INTERNET" />
 ```
-Implements IVLCVout.Callback and MediaPlayer.EventListener in activity or fragment
+Implements IVLCVout.Callback and MediaPlayer.EventListener in activity
 
 Include following veriables at class level
 ```kotlin
