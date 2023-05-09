@@ -119,7 +119,7 @@ qrCodeAnalyzer-kotlin/
 
 ## License
 
-**Kotlin QR code** Copyright © 2023 - Noé Campo
+**Kotlin QR code** Copyright ©2023 - Noé Campo
 
 **This project** can be released as open source software under
 the [GPL v3](https://opensource.org/licenses/gpl-3.0.html)
