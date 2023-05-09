@@ -32,109 +32,90 @@ User interface and experience
 Add below dependancy in application build.gradle
 ```gradle
 dependencies {
-    // it is suppporting ABIs likes armeabi-v7a, arm64-v8a, x86 and x86_64.
-    compile 'de.mrmaffen:libvlc-android:2.1.12@aar'    
+        // Activity Compose
+    implementation "androidx.activity:activity-compose:1.4.0"
+
+    // CameraX
+    implementation "androidx.camera:camera-camera2:1.0.2"
+    implementation "androidx.camera:camera-lifecycle:1.0.2"
+    implementation "androidx.camera:camera-view:1.0.0-alpha31"
+
+    // Zxing
+    implementation 'com.google.zxing:core:3.3.3' 
 }
 ```
 Also include the following required permission in your manifest.
 ```xml
-<!--if you want to play server URL-->
-<uses-permission android:name="android.permission.INTERNET" />
+<!--permission to get camera access-->
+<uses-permission android:name="android.permission.CAMERA" />
 ```
-Implements IVLCVout.Callback and MediaPlayer.EventListener in activity
+Implements  analyze in activity
 
-Include following veriables at class level
-```kotlin
-// declare media player object
-private var mediaPlayer: MediaPlayer?=null
-// declare surface view object
-var mSurface: SurfaceView?=null
-// declare surface holder object
-var holder: SurfaceHolder?= null
-// declare libvlc object
-private var libvlc: LibVLC?=null
-```
-Add following method to create player to play provided URL
+Add following method to create Qr code analyzing method
 ```kotlin
 /**
-* Creates MediaPlayer and plays video
-* @param media
+* Analyzes Qr code and decrypt it
 */
-fun createPlayer(media: String) {
-  if(mediaPlayer!=null && libvlc!=null){
-      releasePlayer()
-  }
-  Log.i(TAG, "Creating vlc player")
-  try {
-      // create arraylist to assign option to create libvlc object
-      val options = ArrayList<String>()
-      options.add("--aout=opensles")
-      options.add("--http-reconnect")
-      options.add("--audio-time-stretch") // time stretching
-      options.add("--network-caching=1500")
-      options.add("-vvv") // verbosity
+    override fun analyze(image: ImageProxy) {
+        if(image.format in supporterImageFormats) {
+            val bytes = image.planes.first().buffer.toByteArray()
+            val source = PlanarYUVLuminanceSource(
+                bytes,
+                image.width,
+                image.height,
+                0,
+                0,
+                image.width,
+                image.height,
+                false
+            )
+            val binaryBmp = BinaryBitmap(HybridBinarizer(source))
+            try {
+                val result = MultiFormatReader().apply {
+                    setHints(
+                        mapOf(
+                            DecodeHintType.POSSIBLE_FORMATS to arrayListOf(
+                                BarcodeFormat.QR_CODE
+                            )
+                        )
+                    )
+                }.decode(binaryBmp)
+                onQrCodeScanned(result.text)
+            } catch(e: Exception) {
+                e.printStackTrace()
+            } finally {
+                image.close()
+            }
+        }
+    }
 
-       // create libvlc object
-       libvlc = LibVLC(activity, options)
-
-       // get surface view holder to display video
-       this.holder=mSurface!!.holder
-       holder!!.setKeepScreenOn(true)
-
-       // Creating media player
-       mediaPlayer = MediaPlayer(libvlc)
-
-       // Setting up video output
-       val vout = mediaPlayer!!.vlcVout
-       vout.setVideoView(mSurface)
-       vout.addCallback(this)
-       vout.attachViews()
-       val m = Media(libvlc, Uri.parse(media))
-       mediaPlayer!!.setMedia(m)
-       mediaPlayer!!.play()
-
-  } catch (e: Exception) {
-    Toast.makeText(activity, "Error in creating player!", Toast.LENGTH_LONG).show()
-  }
-
-}
 ```
 
 ## Project Structure
 
 ```bash
-Dating-app-React-Native/
-├── config/                         # configuration files like environment_config
-├── node_modules/                   # This folder contains all the dependencies that the project requires, including React Native itself.
-|   └── ...                         # all the dependencies listed
-├── android/                        # This folder contains the Android project files, including Gradle build files, Java source code, and XML layout files.
-├── ios/                            # This folder contains the iOS project files, including Xcode project files, Objective-C and Swift source code files.
-├── App.js                          # This is the main component of the React Native app and is responsible for rendering the UI.
-├── src/                            # Main source files folder
-|   ├── assets/                     # The assets used in the project such as pngs / svgs..
-|   └── components/                 # Context components relative to the app itself
-|   └── uiComponents/               # General usable UI components everywhere through the app such as headers, drawers,..
-├── package.json                    # This file contains metadata about the project, including the project name, version, and dependencies.
-├── package-lock.json               # This file is generated by npm and ensures that the project's dependencies are installed in a consistent manner.
-├── babel.config.js                 # This file contains configuration for the Babel transpiler
-├── metro.config.js                 # This file contains configuration for the Metro bundler
+qrCodeAnalyzer-kotlin/
+├── app/                        # This folder contains the main application logic and components.
+| ├── src/                      # This folder contains the source code for the app.
+| | ├── main/                   # This folder contains the main logic of the app.
+| | | ├── java/                 # This folder contains the Java source code.
+| | | | └── com/                # This folder contains the package for the app.
+| | | | └── qrcodeanalyzer/     # This folder contains the main activity and components for the app.
+| | | ├── res/                  # This folder contains the resource files for the app such as images, layouts and strings.
+| | | └── AndroidManifest.xml   # This file contains metadata about the app, including the app name, version, and permissions.
+├── build.gradle                # This file contains the configuration for the Gradle build system.
+├── gradle/                     # This folder contains the Gradle wrapper files.
+| └── wrapper/                  # This folder contains the Gradle wrapper files.
+| ├── gradle-wrapper.jar        # This file contains the Gradle wrapper executable.
+| └── gradle-wrapper.properties # This file contains the Gradle wrapper configuration.
+├── gradlew                     # This file contains the Gradle wrapper executable for Unix-based systems.
+├── gradlew.bat                 # This file contains the Gradle wrapper executable for Windows-based systems.
+├── local.properties            # This file contains the local configuration for the project, such as the path to the Android SDK.
+├── settings.gradle             # This file contains the settings for the Gradle build system.
+├── proguard-rules.pro          # This file contains the configuration for the ProGuard obfuscator.
+├── app.iml                     # This file contains metadata about the project, including the project name, version, and dependencies.
+├── .idea/                      # This folder contains the IntelliJ IDEA project files.
 ```
-
-## Dependencies
-
-| Name                   | Description                                  | Version                    |
-| ---------------------- | -------------------------------------------- | -------------------------- |
-| [react-navigation]     | Navigation library                           | ^6.9.12                    |
-| [moti]                 | Animation library                            | ^0.24.2                    |
-| [react-content-loader] | Placeholder component library                | ^6.2.1                     |
-| [gesture-handler]      | Gesture recognition library                  | ^2.9.0                     |
-| [linear-gradient]      | Linear gradient component                    | ^3.0.2                     |
-| [reanimated]           | Animation library                            | ^18.1.0                    |
-| [redash]               | Utility library for animations               | ^4.5.1                     |
-| [safe-area-context]    | Safe area component                          | ^3.20.0                    |
-| [native-screens]       | Native screen components                     | ^3.3.0                     |
-| [native-splash-screen] | Splash screen library                        | ^13.9.0                    |
-| [native-svg]           | SVG rendering library                        | ^9.6.5                     |
 
 ## License
 
