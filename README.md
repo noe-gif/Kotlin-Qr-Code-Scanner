@@ -5,7 +5,7 @@
 </p>
 <br>
 
-![Banner](https://cdn.discordapp.com/attachments/774360587391860769/1105186000944246915/kotlin.png)
+![Banner](https://cdn.discordapp.com/attachments/774360587391860769/1106160370789388328/fjzdkfjepz.png)
 
 ## Stats
 
